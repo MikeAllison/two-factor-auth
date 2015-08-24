@@ -7,8 +7,11 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-  <p><%= link_to 'Log Out', logout_path %></p>
+  <p>
+    <%= link_to_if current_user.nil?, 'Log In', login_path %>
+    <%= link_to_unless current_user.nil?, 'Log Out', logout_path %>
+  </p>
+  <p><%= link_to 'Register', register_path %></p>
 
 <%= yield %>
 

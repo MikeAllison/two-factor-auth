@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate!
+  before_action :authenticate!, except: [:new, :create]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
@@ -29,7 +29,6 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
-        session[:user_id] = @user.id
         authy = Authy::API.register_user(email: @user.email, cellphone: @user.phone_number, country_code: '1')
 
         if authy.ok?
@@ -38,7 +37,7 @@ class UsersController < ApplicationController
           authy.errors
         end
 
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
+        format.html { redirect_to login_path, notice: 'User was successfully created.' }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new }

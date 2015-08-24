@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :authenticate!
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
@@ -28,6 +29,15 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
+        session[:user_id] = @user.id
+        authy = Authy::API.register_user(email: @user.email, cellphone: @user.phone_number, country_code: '1')
+
+        if authy.ok?
+          @user.update(authy_id: authy.id)
+        else
+          authy.errors
+        end
+
         format.html { redirect_to @user, notice: 'User was successfully created.' }
         format.json { render :show, status: :created, location: @user }
       else
@@ -69,6 +79,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:username, :password_digest)
+      params.require(:user).permit(:username, :password, :phone_number, :email)
     end
 end

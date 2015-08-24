@@ -1,0 +1,5 @@
+<%= form_tag verify_sessions_path do %>
+  <%= label_tag 'Verification Code' %>
+  <%= text_field_tag :token%>
+  <%= submit_tag 'Verify!' %>
+<% end %>
